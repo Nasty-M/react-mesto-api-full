@@ -1,0 +1,62 @@
+const express = require('express');
+const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser');
+const { errors } = require('celebrate');
+const { celebrate, Joi } = require('celebrate');
+const cardRouter = require('./routes/cardRoutes');
+const userRouter = require('./routes/userRoutes');
+const { login, createUser } = require('./controllers/users');
+const { auth } = require('./middlewares/auth');
+const getErrorMessage = require('./middlewares/getErrorMessage');
+const NotFound = require('./errors/NotFound');
+const cors = require('./middlewares/cors');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
+
+const { PORT = 3001 } = process.env;
+
+const app = express();
+
+mongoose.connect('mongodb://localhost:27017/mestodb', {
+  useNewUrlParser: true,
+});
+
+app.use(requestLogger);
+app.use(express.json());
+app.use(cookieParser());
+app.use(cors);
+
+app.get('/crash-test', () => {
+  setTimeout(() => {
+    throw new Error('Сервер сейчас упадёт');
+  }, 0);
+});
+
+app.post('/signin', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email({ tlds: { allow: false } }),
+    password: Joi.string().required(),
+  }),
+}), login);
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+    avatar: Joi.string().regex(/https?:\/\/(\w{3}\.)?[1-9a-z\-.]{1,}\.\w{2,}(\/[1-90a-z.,_@%&?+=~/-]{1,}\/?)?#?/i),
+    email: Joi.string().required().email({ tlds: { allow: false } }),
+    password: Joi.string().required(),
+  }),
+}), createUser);
+app.use(auth);
+app.use('/users', userRouter);
+app.use('/cards', cardRouter);
+app.use('*', (res, req, next) => {
+  next(new NotFound('Страница не найдена'));
+});
+app.get('/signout', (req, res) => {
+  res.clearCookie('access_token').send({ message: 'Выход' });
+});
+
+app.use(errorLogger);
+app.use(errors());
+app.use(getErrorMessage);
+app.listen(PORT);
