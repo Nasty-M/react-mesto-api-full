@@ -1,0 +1,5 @@
+.header__info {
+  color: white;
+  display: flex;
+  flex-direction: raw;
+}

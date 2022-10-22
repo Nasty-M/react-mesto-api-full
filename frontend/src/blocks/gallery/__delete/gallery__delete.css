@@ -1,0 +1,19 @@
+.gallery__delete {
+  width: 18px;
+  height: 19px;
+  background: none;
+  border: none;
+  outline: none;
+  background-image: url(../../../images/Recycle_bin.svg);
+  cursor: pointer;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background-repeat: no-repeat;
+  z-index: 2;
+  visibility: hidden;
+}
+
+.gallery__delete:hover {
+  opacity: 0.6;
+}
