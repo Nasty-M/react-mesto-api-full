@@ -1,6 +1,6 @@
 const allowedCors = [
-  'http://nastiakor.mesto.nomoredomains.icu',
   'https://nastiakor.mesto.nomoredomains.icu',
+  'http://nastiakor.mesto.nomoredomains.icu',
   'http://localhost:3000',
 ];
 
