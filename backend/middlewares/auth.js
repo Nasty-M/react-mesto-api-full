@@ -1,3 +1,4 @@
+require('dotenv').config();
 const jwt = require('jsonwebtoken');
 const NotAuthError = require('../errors/NotAuthError');
 
@@ -12,7 +13,7 @@ const auth = (req, res, next) => {
   let payload;
 
   try {
-    payload = jwt.verify(token, 'my-secret-code');
+    payload = jwt.verify(token, process.env.NODE_ENV === 'production' ? process.env.JWT_SECRET : 'my-secret-code');
   } catch (err) {
     next(new NotAuthError('Необходима авторизация'));
     return;
