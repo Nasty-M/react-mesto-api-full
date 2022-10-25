@@ -43,7 +43,8 @@ class RegisterApi {
 }
 
 const registerApi = new RegisterApi({
-  baseUrl: 'https://api.nastiakor.mesto.nomoredomains.icu',
+  //baseUrl: 'https://api.nastiakor.mesto.nomoredomains.icu',
+  baseUrl: 'http://localhost:3001',
   headers: {
     'Content-Type': 'application/json'
   },

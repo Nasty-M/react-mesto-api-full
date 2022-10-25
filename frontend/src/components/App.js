@@ -55,12 +55,11 @@ function App(props) {
 
   function handleCardLike(card) {
     // Снова проверяем, есть ли уже лайк на этой карточке
-    const isLiked = card.likes.some(i => i._id === currentUser._id);
+    const isLiked = card.likes.some(i => i === currentUser._id);
     
     // Отправляем запрос в API и получаем обновлённые данные карточки
     api.toggleLike(card._id, isLiked).then((newCard) => {
         setCards((state) => state.map((c) => {
-          console.log(c);
           return c._id === card._id ? newCard : c}));
     })
     .catch((err) => {
@@ -196,9 +195,15 @@ function App(props) {
   }, [])
 
   function logout() {
-    localStorage.setItem('token', '');
-    setLoggedIn(false);
-    props.history.push('/sign-in');
+    api.logout()
+    .then(() => {
+      document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      setLoggedIn(false);
+      props.history.push('/sign-in');
+    })
+    .catch((err) => {
+      console.log(err);
+    })
   }
 
   function closePopupWithoutForm() {
